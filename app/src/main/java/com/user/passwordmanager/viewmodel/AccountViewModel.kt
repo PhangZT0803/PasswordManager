@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.user.passwordmanager.data.Account
 import com.user.passwordmanager.data.AccountRepository
+import com.user.passwordmanager.data.Setting
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -16,8 +17,8 @@ class AccountViewModel (private val repository: AccountRepository): ViewModel(){
             account -> account.accountId
         }
      }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-    fun addAccount(webSiteName: String, userName: String, passwordText: String) = viewModelScope.launch {
-        val newAccount = Account(webSiteName = webSiteName, userName = userName, encryptedPassword = passwordText,webSiteUrl=" ",labelId = null)
+    fun addAccount(webSiteName: String, userName: String, passwordText: String, webSiteUrl: String) = viewModelScope.launch {
+        val newAccount = Account(webSiteName = webSiteName, userName = userName, encryptedPassword = passwordText,webSiteUrl=webSiteUrl,labelId = null)
         repository.insertAccount(newAccount)
     }
     fun deleteAccount(account: Account) = viewModelScope.launch {
@@ -33,4 +34,8 @@ class AccountViewModel (private val repository: AccountRepository): ViewModel(){
         repository.searchWebsiteName(search)
     }
 
+    fun saveAppPin(pin: String) = viewModelScope.launch {
+        val setting = Setting(appPIN = pin, SetPIN = true)
+        repository.saveSetting(setting)
+    }
 }

@@ -6,10 +6,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName =  "Setting")
 data class Setting (
     @PrimaryKey val settingId: Int = 0,
-    val faceIDRecorded:  Boolean = false,
-    val    initialLock:  Int = 0,
-    val   passwordLock:  Int = 1,
-    val         appPIN:  Int,
+    val         appPIN:  String,
     val         SetPIN:  Boolean,
     val      mainTheme:  Int = 0
 )

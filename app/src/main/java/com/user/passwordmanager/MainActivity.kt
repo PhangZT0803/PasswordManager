@@ -3,9 +3,16 @@ package com.user.passwordmanager
 import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -35,34 +42,69 @@ class MainActivity : FragmentActivity() {
         )
             .build()
 
-        val repository = AccountRepository(database.AccountDao())
+        val repository = AccountRepository(database.AccountDao(), database.SettingDao())
         val viewModelFactory = AccountViewModelFactory(repository)
         val viewModel = ViewModelProvider(this, viewModelFactory)[AccountViewModel::class.java]
-
-        val settingDao = database.SettingDao()
-
 
         enableEdgeToEdge()
         setContent {
             PasswordManagerTheme {
                 val navController = rememberNavController()
-                NavHost(
-                    navController = navController,
-                    startDestination = "main"
-                ) {
-                    composable("main") {
-                        PasswordManagerScreen(
-                            viewModel = viewModel,
-                            navController = navController
-                        )
-                    }
-                    composable("AddAccountScreen") {
-                        AddAccountScreen(
-                            viewModel = viewModel,
-                            navController = navController
-                        )
-                    }
+                var storedPin by remember { mutableStateOf<String?>(null) }
+                var isRegistering by remember { mutableStateOf(true) }
+                var isLoading by remember { mutableStateOf(true) }
 
+                LaunchedEffect(Unit) {
+                    val setting = database.SettingDao().getSetting()
+                    if (setting != null && setting.SetPIN) {
+                        storedPin = setting.appPIN
+                        isRegistering = false
+                    } else {
+                        isRegistering = true
+                    }
+                    isLoading = false
+                }
+
+                if (isLoading) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                    }
+                } else {
+                    NavHost(
+                        navController = navController,
+                        startDestination = "Login"
+                    ) {
+                        composable("Login") {
+                            LoginScreen(
+                                isRegistering = isRegistering,
+                                correctPin = storedPin,
+                                onAuthSuccess = { newPin ->
+                                    if (isRegistering) {
+                                        viewModel.saveAppPin(newPin)
+                                        storedPin = newPin
+                                        isRegistering = false
+                                    }
+                                })
+                            navController.navigate("main") {
+                                popUpTo("Login") {
+                                    inclusive = true
+                                }
+                            }
+                        }
+                        composable("main") {
+                            PasswordManagerScreen(
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                        }
+                        composable("AddAccountScreen") {
+                            AddAccountScreen(
+                                viewModel = viewModel,
+                                navController = navController
+                            )
+                        }
+
+                    }
                 }
             }
         }

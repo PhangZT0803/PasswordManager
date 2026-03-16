@@ -19,15 +19,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import com.user.passwordmanager.viewmodel.AccountViewModel
-
 @Composable
 fun PasswordManagerScreen(viewModel: AccountViewModel,navController: NavController) {
     val accounts by viewModel.accounts.collectAsState()
     var searchText by remember { mutableStateOf("") }
     var selectedTabIndex by remember { mutableIntStateOf(0) }
+
     Scaffold(
         topBar = {
-            searchBar(
+            SearchBar(
                 query = searchText,
                 onQueryChange = { searchText = it }
             )
@@ -38,7 +38,8 @@ fun PasswordManagerScreen(viewModel: AccountViewModel,navController: NavControll
             }
         },
         bottomBar = {
-            AppNavigationBar(currentRoute = selectedTabIndex,
+            AppNavigationBar(
+                currentRoute = selectedTabIndex,
                 onTabSelected = { selectedTabIndex = it })
         }
     ) { innerPadding ->
@@ -56,3 +57,4 @@ fun PasswordManagerScreen(viewModel: AccountViewModel,navController: NavControll
         }
     }
 }
+
