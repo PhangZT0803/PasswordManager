@@ -90,7 +90,7 @@ fun LoginScreen(
         Button(
             onClick = {
                 if (inputPin == correctPin) {
-                    onAuthSuccess()
+                    onAuthSuccess(inputPin)
                 } else {
                     isError = true
                     inputPin = ""

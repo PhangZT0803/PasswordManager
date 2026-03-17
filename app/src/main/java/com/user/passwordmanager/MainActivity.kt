@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -100,10 +101,25 @@ class MainActivity : FragmentActivity() {
                         composable("AddAccountScreen") {
                             AddAccountScreen(
                                 viewModel = viewModel,
-                                navController = navController
+                                navController = navController,
+                                accountToEdit = null,
                             )
                         }
+                        composable("EditAccountScreen/{accountId}") { backStackEntry ->
+                            val accountIdStr = backStackEntry.arguments?.getString("accountId")
+                            val accountId = accountIdStr?.toIntOrNull()
 
+                            val accounts by viewModel.accounts.collectAsState()
+                            val accountToEdit = accounts.find { it.accountId == accountId }
+
+                            if (accountToEdit != null) {
+                                AddAccountScreen(
+                                    viewModel = viewModel,
+                                    navController = navController,
+                                    accountToEdit = accountToEdit
+                                )
+                            }
+                        }
                     }
                 }
             }

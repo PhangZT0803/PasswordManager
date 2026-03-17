@@ -35,21 +35,27 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.user.passwordmanager.R
+import com.user.passwordmanager.data.Account
+import com.user.passwordmanager.security.Security
 import com.user.passwordmanager.viewmodel.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController){
-    var webSiteName by remember{mutableStateOf("")}
-    var userName by remember{mutableStateOf("")}
-    var password by remember{mutableStateOf("")}
-    var webSiteUrl by remember{mutableStateOf("")}
-    var isUrlAutoSyncEnabled by remember { mutableStateOf(true) }
+fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,accountToEdit: Account? = null){
+    val initialPassword = remember(accountToEdit) {
+        accountToEdit?.let { Security.passwordDecryption(it.encryptedPassword) } ?: ""
+    }
+    var webSiteName by remember{mutableStateOf(accountToEdit?.webSiteName ?: "") }
+    var userName by remember{mutableStateOf(accountToEdit?.userName ?: "")}
+    var password by remember{mutableStateOf( initialPassword )}
+    var webSiteUrl by remember{mutableStateOf(accountToEdit?.webSiteUrl ?:"")}
 
+    val isEditing:Boolean = accountToEdit != null
+    var isUrlAutoSyncEnabled by remember { mutableStateOf(!isEditing) }
     Scaffold(
     topBar = {
         TopAppBar(
-            title = { Text("Add Account")},
+            title = { Text(if (isEditing) "Edit Account" else "Add Account")},
             navigationIcon = {
                 IconButton(onClick = { navController.popBackStack() }) {
                     Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
@@ -108,7 +114,7 @@ fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController){
                         value = password,
                         onValueChange = { password = it },
                         label = { Text("Password") },
-                        visualTransformation = PasswordVisualTransformation(), // 隐藏密码字符
+                        visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         modifier = Modifier.fillMaxWidth()
             )
@@ -118,14 +124,18 @@ fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController){
             Button(
                 onClick = {
                     if (webSiteName.isNotBlank() && userName.isNotBlank() && password.isNotBlank()&& webSiteUrl.isNotBlank()) {
-                        viewModel.addAccount(webSiteName, userName, password, webSiteUrl)
+                        if (isEditing) {
+                            viewModel.updateAccount(webSiteName, userName, password, webSiteUrl)
+                        } else {
+                            viewModel.addAccount(webSiteName, userName, password, webSiteUrl)
+                        }
                         navController.popBackStack()
                     }
                 },
                 modifier = Modifier.fillMaxWidth(),
                 enabled = webSiteName.isNotBlank() && userName.isNotBlank() && password.isNotBlank() && webSiteUrl.isNotBlank()
             ) {
-                Text("Add Account")
+                Text(if (isEditing) "Save Changes" else "Add Account")
             }
         }
     }

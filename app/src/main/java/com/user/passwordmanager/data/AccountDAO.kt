@@ -20,10 +20,7 @@ interface AccountDAO {
     suspend fun deleteAccount(delete: Account)
 
     @Update
-    suspend fun updateUserName(account: Account)
-
-    @Update
-    suspend fun updatePassword(account: Account)
+    suspend fun updateAccount(account: Account)
 
     @Query("SELECT * FROM Account WHERE webSiteName LIKE '%' ||:search || '%' ORDER BY webSiteName ASC")
     suspend fun searchWebsiteName(search: String): List<Account>

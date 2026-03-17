@@ -52,7 +52,9 @@ fun PasswordManagerScreen(viewModel: AccountViewModel,navController: NavControll
                 it.webSiteName.contains(searchText, ignoreCase = true)
             }
             items(filteredList, key = { it.accountId }){ account ->
-                AccountItem(account)
+                AccountItem(account = account, onEditClick = {
+                    navController.navigate("EditAccountScreen/${account.accountId}")
+                })
             }
         }
     }

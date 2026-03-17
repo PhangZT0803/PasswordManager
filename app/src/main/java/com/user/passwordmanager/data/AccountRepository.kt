@@ -6,9 +6,7 @@ class AccountRepository (private val dao: AccountDAO, private val settingDao: Se
     val allAccount: Flow<List<Account>> = dao.getAllAccount()
     suspend fun insertAccount(insert: Account) = dao.insertAccount(insert)
     suspend fun deleteAccount(delete: Account) = dao.deleteAccount(delete)
-    suspend fun searchWebsiteName(search: String) = dao.searchWebsiteName(search)
-    suspend fun updateUsername(updateName: Account) = dao.updateUserName(updateName)
-    suspend fun updatePassword(updatePassword: Account) = dao.updatePassword(updatePassword)
+    suspend fun updateAccount(update: Account) = dao.updateAccount(update)
 
     suspend fun getSetting(): Setting? = settingDao.getSetting()
     suspend fun saveSetting(setting: Setting) = settingDao.insertSetting(setting)

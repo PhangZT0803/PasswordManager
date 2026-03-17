@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.user.passwordmanager.data.Account
 import com.user.passwordmanager.data.AccountRepository
 import com.user.passwordmanager.data.Setting
+import com.user.passwordmanager.security.Security
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
@@ -18,20 +19,17 @@ class AccountViewModel (private val repository: AccountRepository): ViewModel(){
         }
      }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     fun addAccount(webSiteName: String, userName: String, passwordText: String, webSiteUrl: String) = viewModelScope.launch {
+        val encryptedPassword = Security.passwordEncryption(passwordText)
         val newAccount = Account(webSiteName = webSiteName, userName = userName, encryptedPassword = passwordText,webSiteUrl=webSiteUrl,labelId = null)
         repository.insertAccount(newAccount)
     }
     fun deleteAccount(account: Account) = viewModelScope.launch {
         repository.deleteAccount(account)
     }
-    fun updateUsername(account: Account) = viewModelScope.launch {
-        repository.updateUsername(account)
-    }
-    fun updatePassword(account:Account)= viewModelScope.launch {
-        repository.updatePassword(account)
-    }
-    fun searchWebsiteName(search: String) = viewModelScope.launch {
-        repository.searchWebsiteName(search)
+    fun updateAccount(webSiteName: String, userName: String, passwordText: String, webSiteUrl: String) = viewModelScope.launch {
+        val encryptedPassword = Security.passwordEncryption(passwordText)
+        val newAccount = Account(webSiteName = webSiteName, userName = userName, encryptedPassword = passwordText,webSiteUrl=webSiteUrl,labelId = null)
+        repository.updateAccount(newAccount)
     }
 
     fun saveAppPin(pin: String) = viewModelScope.launch {
