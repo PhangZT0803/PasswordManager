@@ -4,7 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 
 
-@Database(entities = [Account::class, AccountLabel::class, Setting::class], version = 2, exportSchema = false)
+@Database(entities = [Account::class, AccountLabel::class, Setting::class], version = 1, exportSchema = false)
 abstract class AccountDatabase: RoomDatabase() {
     abstract fun AccountDao(): AccountDAO
     abstract fun AccountLabelDao(): AccountLabelDAO

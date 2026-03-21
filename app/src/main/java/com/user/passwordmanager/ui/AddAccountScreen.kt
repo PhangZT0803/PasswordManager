@@ -36,7 +36,8 @@ import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.user.passwordmanager.R
 import com.user.passwordmanager.data.Account
-import com.user.passwordmanager.security.Security
+import com.user.passwordmanager.Domain.PasswordStrength
+import com.user.passwordmanager.Domain.Security
 import com.user.passwordmanager.viewmodel.AccountViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,13 +46,15 @@ fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,ac
     val initialPassword = remember(accountToEdit) {
         accountToEdit?.let { Security.passwordDecryption(it.encryptedPassword) } ?: ""
     }
+
     var webSiteName by remember{mutableStateOf(accountToEdit?.webSiteName ?: "") }
     var userName by remember{mutableStateOf(accountToEdit?.userName ?: "")}
     var password by remember{mutableStateOf( initialPassword )}
     var webSiteUrl by remember{mutableStateOf(accountToEdit?.webSiteUrl ?:"")}
 
-    val isEditing:Boolean = accountToEdit != null
+    val isEditing = accountToEdit != null
     var isUrlAutoSyncEnabled by remember { mutableStateOf(!isEditing) }
+    val passwordStrengthScore = remember(password){ PasswordStrength.evaluateStrength(password)}
     Scaffold(
     topBar = {
         TopAppBar(
@@ -83,10 +86,10 @@ fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,ac
             )
             OutlinedTextField(
                 value = webSiteName,
-                onValueChange = { newValue->
-                    webSiteName = newValue
+                onValueChange = { newWebSiteName:String ->
+                    webSiteName = newWebSiteName
                     if (isUrlAutoSyncEnabled) {
-                        webSiteUrl = newValue.lowercase().replace(" ", "")+".com"
+                        webSiteUrl = newWebSiteName.lowercase().replace(" ", "")+".com"
                     }
                 },
                 label = { Text("Website Name")},
@@ -95,8 +98,8 @@ fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,ac
              )
             OutlinedTextField(
                 value = webSiteUrl,
-                onValueChange = {  newValue->
-                    webSiteUrl = newValue
+                onValueChange = {  newWebsiteUrl:String ->
+                    webSiteUrl = newWebsiteUrl
                     isUrlAutoSyncEnabled = false
                 },
                 label = { Text("Website URL") },
@@ -105,14 +108,14 @@ fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,ac
             )
             OutlinedTextField(
                         value = userName,
-                        onValueChange = { userName = it },
+                        onValueChange = { newUserName:String -> userName = newUserName },
                         label = { Text("User Name") },
                         modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = { newPassword:String -> password = newPassword },
                         label = { Text("Password") },
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -125,7 +128,7 @@ fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,ac
                 onClick = {
                     if (webSiteName.isNotBlank() && userName.isNotBlank() && password.isNotBlank()&& webSiteUrl.isNotBlank()) {
                         if (isEditing) {
-                            viewModel.updateAccount(webSiteName, userName, password, webSiteUrl)
+                            viewModel.updateAccount(accountToEdit.accountId, webSiteName, userName, password, webSiteUrl)
                         } else {
                             viewModel.addAccount(webSiteName, userName, password, webSiteUrl)
                         }

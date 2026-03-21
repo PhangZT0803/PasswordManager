@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Refresh
@@ -17,8 +18,10 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.OutlinedTextField
@@ -31,12 +34,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.user.passwordmanager.R
 import com.user.passwordmanager.data.Account
-import com.user.passwordmanager.security.Security
+import com.user.passwordmanager.Domain.Security
 import com.user.passwordmanager.ui.theme.passwordTypography
 import com.user.passwordmanager.ui.theme.usernameTypography
 import com.user.passwordmanager.ui.theme.websiteTypography
@@ -54,17 +58,30 @@ import com.user.passwordmanager.ui.theme.websiteTypography
         shape = RoundedCornerShape(12.dp)
     )
 }
-
 @Composable
-fun AccountItem(account: Account,onEditClick:()->Unit) {
+fun getStrengthAppearance(score: Int): Pair<String, Color> {
+    return when (score) {
+        0 -> "Very Weak" to Color(0xFFD32F2F)  // 红色
+        1 -> "Weak" to Color(0xFFF57C00)       // 橙色
+        2 -> "Medium" to Color(0xFFFBC02D)      // 黄色
+        3 -> "Strong" to Color(0xFF388E3C)      // 绿色
+        4 -> "Very Strong" to Color(0xFF1B5E20) // 深绿
+        else -> "Unknown" to Color.Gray
+    }
+}
+@Composable
+fun AccountItem(account: Account,onEditClick:()->Unit,onDeleteClick: () -> Unit) {
     var isPasswordVisible by remember { mutableStateOf(false) }
     val decryptedPassword = remember(account.encryptedPassword) {
         Security.passwordDecryption(account.encryptedPassword)
     }
+    val (strengthText, strengthColor) = getStrengthAppearance(account.passwordStrength)
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(8.dp)),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -84,12 +101,12 @@ fun AccountItem(account: Account,onEditClick:()->Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(text = account.webSiteName, style = websiteTypography.titleMedium)
                 Text(text = account.userName, style = usernameTypography.bodyMedium)
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = if (isPasswordVisible) decryptedPassword else "******",
-                        style = passwordTypography.bodyMedium
-                    )
-                }
+                Text(text = if (isPasswordVisible) decryptedPassword else "******", style = passwordTypography.bodyMedium)
+                Text(text = "Security Level: $strengthText",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = strengthColor,
+                    modifier = Modifier.padding(top = 2.dp)
+                )
             }
             IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                 Icon(
@@ -103,6 +120,14 @@ fun AccountItem(account: Account,onEditClick:()->Unit) {
                     imageVector = Icons.Default.Edit,
                     contentDescription = "Edit Account",
                     modifier = Modifier.size(20.dp)
+                )
+            }
+            IconButton(onClick = onDeleteClick) {
+                Icon(
+                    imageVector = Icons.Default.Delete,
+                    contentDescription = "Delete Account",
+                    modifier = Modifier.size(20.dp),
+                    tint = MaterialTheme.colorScheme.error
                 )
             }
             }

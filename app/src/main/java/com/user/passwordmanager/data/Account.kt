@@ -28,5 +28,6 @@ data class Account(
     val webSiteUrl:String,
     val userName:String,
     val encryptedPassword: String,
+    val passwordStrength: Int,
     val labelId:Int?=null
 )

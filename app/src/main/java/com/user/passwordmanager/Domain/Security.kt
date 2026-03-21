@@ -1,4 +1,4 @@
-package com.user.passwordmanager.security
+package com.user.passwordmanager.Domain
 
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties

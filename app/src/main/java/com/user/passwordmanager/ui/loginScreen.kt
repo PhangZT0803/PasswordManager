@@ -12,6 +12,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.room.util.newStringBuilder
 
 @Composable
 fun LoginScreen(
@@ -54,7 +55,7 @@ fun LoginScreen(
 
         OutlinedTextField(
             value = inputPin,
-            onValueChange = { if (it.length <= 6) { inputPin = it;isError = false }},
+            onValueChange = { newInputPin:String -> if (newInputPin.length <= 6) { inputPin=newInputPin; isError = false }},
             label = { Text(if (isRegistering) "Set PIN" else "PIN Number") },
             visualTransformation = PasswordVisualTransformation(),
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -67,7 +68,7 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(16.dp))
             OutlinedTextField(
                 value = confirmPin,
-                onValueChange = { if (it.length <= 6) { confirmPin = it; isError = false } },
+                onValueChange = { newConfirmPin:String -> if(newConfirmPin.length <= 6) {confirmPin = newConfirmPin; isError = false } },
                 label = { Text("Confirm PIN") },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -89,7 +90,16 @@ fun LoginScreen(
 
         Button(
             onClick = {
-                if (inputPin == correctPin) {
+                if (isRegistering) {
+                    if (inputPin == confirmPin) {
+                        onAuthSuccess(inputPin)
+                    } else {
+                        isError = true
+                        inputPin = ""
+                        confirmPin = ""
+                    }
+                }
+                else if (inputPin == correctPin) {
                     onAuthSuccess(inputPin)
                 } else {
                     isError = true
