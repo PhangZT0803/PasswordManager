@@ -242,12 +242,12 @@ fun SwipeDeleteBackground(swipeDirection: Int){
                 icon = { Icon(Icons.Default.Lock, contentDescription = "Vault") },
                 label = { Text("Vault") }
             )
-            NavigationBarItem(
-                selected = currentRoute == 1,
-                onClick = { onTabSelected(1) },
-                icon = { Icon(Icons.Default.Refresh, contentDescription = "Generator") },
-                label = { Text("Generator") }
-            )
+//            NavigationBarItem(
+//                selected = currentRoute == 1,
+//                onClick = { onTabSelected(1) },
+//                icon = { Icon(Icons.Default.Refresh, contentDescription = "Generator") },
+//                label = { Text("Generator") }
+//            )
             NavigationBarItem(
                 selected = currentRoute == 2,
                 onClick = { onTabSelected(2) },

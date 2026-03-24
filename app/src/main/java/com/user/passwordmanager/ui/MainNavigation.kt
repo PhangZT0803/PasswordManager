@@ -47,7 +47,7 @@ fun PasswordManagerScreen(viewModel: AccountViewModel,navController: NavControll
                             onQueryChange = { searchText = it }
                         )
                     } else {
-                        Text(if (selectedTabIndex == 1) "Password Generator" else "Setting")
+                        Text( "Setting")
                     }
                 }
             )

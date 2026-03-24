@@ -37,7 +37,6 @@ class AccountViewModel @Inject constructor(private val repository: AccountReposi
             encryptedPassword = encryptedPassword,
             webSiteUrl = webSiteUrl,
             passwordStrength = passwordStrength,
-            labelId = null
         )
         repository.insertAccount(newAccount)
     }
@@ -62,7 +61,6 @@ class AccountViewModel @Inject constructor(private val repository: AccountReposi
             encryptedPassword = encryptedPassword,
             webSiteUrl = webSiteUrl,
             passwordStrength = passwordStrength,
-            labelId = null
         )
         repository.updateAccount(updateAccount)
     }

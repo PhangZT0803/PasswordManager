@@ -46,7 +46,7 @@ fun LoginScreen(
         isError                                   -> "Incorrect PIN"
         isRegistering && !isConfirmStep           -> "Choose a $PIN_LENGTH-digit PIN"
                 isRegistering && isConfirmStep    -> "Re-enter your PIN"
-        else                                      -> "4 - 6 digits"
+        else                                      -> "Enter your 6 digits"
     }
 
     //LauchedEffect是持续监听一个状态的改变,每次value change就执行一次内容,如果监听Unit(理解为Void就好)就可以做到启动的时候只执行一次
@@ -85,7 +85,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(32.dp),
+                .padding(60.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
@@ -96,7 +96,7 @@ fun LoginScreen(
                 tint = MaterialTheme.colorScheme.primary
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
