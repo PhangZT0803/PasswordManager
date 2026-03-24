@@ -6,22 +6,7 @@ import androidx.room.Index
 import androidx.room.PrimaryKey
 
 //Entity 定义一个Table
-@Entity(
-    tableName = "Account",
-    foreignKeys = [
-        ForeignKey(
-            entity = AccountLabel::class,
-            parentColumns = ["labelId"],//primary Key
-            childColumns = ["labelId"],//foreign Key
-            onDelete = ForeignKey.SET_NULL// if table "Accountlabel" deleted ,set "labelId" in table "Account" to null
-        )
-    ],
-    indices = [ //正常的Database table的Index SQL)
-        Index(value = ["webSiteUrl", "userName"], unique = true),
-        Index(value = ["webSiteName"]),
-        Index(value = ["labelId"])
-    ]
-)
+@Entity(tableName = "Account")
 
 data class Account(
     @PrimaryKey(autoGenerate = true) val accountId: Int=0,
@@ -29,6 +14,5 @@ data class Account(
     val webSiteUrl:String,
     val userName:String,
     val encryptedPassword: String,
-    val passwordStrength: Int,
-    val labelId:Int?=null
+    val passwordStrength: Int
 )

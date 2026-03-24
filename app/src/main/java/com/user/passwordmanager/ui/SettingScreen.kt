@@ -21,6 +21,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -131,101 +132,117 @@ fun SettingScreen(viewModel: SettingViewModel) {
         )
     }
 }
-            @Composable
-            fun ChangePinDialog(
-                currentPin: String, // 传入当前数据库里的正确旧密码
-                onDismiss: () -> Unit, // 点击取消或背景时的回调
-                onSaveSuccess: (String) -> Unit // 保存成功后的回调，把新密码传出去
+private enum class ChangePinStep { VERIFY_OLD, ENTER_NEW, CONFIRM_NEW }
+@Composable
+fun ChangePinDialog(
+    currentPin: String, // 传入当前数据库里的正确旧密码
+    onDismiss: () -> Unit, // 点击取消或背景时的回调
+    onSaveSuccess: (String) -> Unit // 保存成功后的回调，把新密码传出去
+) {
+    var step by remember { mutableStateOf(ChangePinStep.VERIFY_OLD) }
+    var inputPin by remember { mutableStateOf("") }
+    var newPin by remember { mutableStateOf("") }
+    var isError by remember { mutableStateOf(false) }
+
+    val title = when (step) {
+        ChangePinStep.VERIFY_OLD  -> "Enter Old PIN"
+        ChangePinStep.ENTER_NEW   -> "Enter New PIN"
+        ChangePinStep.CONFIRM_NEW -> "Confirm New PIN"
+    }
+
+    val subtitle = when {
+        isError && step == ChangePinStep.VERIFY_OLD  -> "Incorrect PIN"
+        isError && step == ChangePinStep.CONFIRM_NEW -> "PINs do not match"
+        else -> "6-digit PIN"
+    }
+
+    LaunchedEffect(inputPin) {
+        if (inputPin.length < 6) return@LaunchedEffect
+
+        when (step) {
+            ChangePinStep.VERIFY_OLD -> {
+                if (inputPin == currentPin) {
+                    step = ChangePinStep.ENTER_NEW
+                    inputPin = ""
+                    isError = false
+                } else {
+                    isError = true
+                    inputPin = ""
+                }
+            }
+            ChangePinStep.ENTER_NEW -> {
+                newPin = inputPin
+                inputPin = ""
+                step = ChangePinStep.CONFIRM_NEW
+            }
+            ChangePinStep.CONFIRM_NEW -> {
+                if (inputPin == newPin) {
+                    onSaveSuccess(inputPin)
+                } else {
+                    isError = true
+                    inputPin = ""
+                }
+            }
+        }
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(dismissOnClickOutside = false)
+    ) {
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(24.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
-                var oldPin by remember { mutableStateOf("") }
-                var newPin by remember { mutableStateOf("") }
-                var confirmPin by remember { mutableStateOf("") }
-                var errorMessage by remember { mutableStateOf<String?>(null) }
+                // 标题
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Text(
+                        text = title,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = subtitle,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = if (isError) MaterialTheme.colorScheme.error
+                        else MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                }
 
-                // 使用最基础的 Dialog 开启一个弹层
-                Dialog(
-                    onDismissRequest = onDismiss,
-                    // 可选：设置点击外部不消失，强制用户点取消
-                    properties = DialogProperties(dismissOnClickOutside = false)
-                ) {
-                    // 自己画弹窗的背景卡片
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(16.dp), // 漂亮的圆角
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp), // 卡片内部的边距
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            // 标题
-                            Text(
-                                text = "Change App PIN",
-                                style = MaterialTheme.typography.titleLarge
-                            )
+                // PIN 点
+                PinDots(length = inputPin.length, maxLength = 6)
 
-                            // 1. 旧密码输入框 (复用我们刚才抽离的组件)
-                            PinInputField(
-                                value = oldPin,
-                                onValueChange = { oldPin = it; errorMessage = null },
-                                label = "Old PIN",
-                                isError = errorMessage == "Incorrect Old PIN",
-                                errorMessage = if (errorMessage == "Incorrect Old PIN") errorMessage else null
-                            )
-
-                            // 2. 新密码输入框
-                            PinInputField(
-                                value = newPin,
-                                onValueChange = { newPin = it; errorMessage = null },
-                                label = "New PIN"
-                            )
-
-                            // 3. 确认新密码输入框
-                            PinInputField(
-                                value = confirmPin,
-                                onValueChange = { confirmPin = it; errorMessage = null },
-                                label = "Confirm New PIN"
-                            )
-
-                            // 统一的错误提示区域
-                            if (errorMessage != null && errorMessage != "Incorrect Old PIN") {
-                                Text(
-                                    text = errorMessage!!,
-                                    color = MaterialTheme.colorScheme.error,
-                                    style = MaterialTheme.typography.bodySmall
-                                )
-                            }
-
-                            Spacer(modifier = Modifier.height(8.dp))
-
-                            // 底部按钮行
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
-                            ) {
-                                TextButton(onClick = onDismiss) {
-                                    Text("Cancel")
-                                }
-                                Button(
-                                    onClick = {
-                                        // 校验逻辑
-                                        when {
-                                            oldPin != currentPin -> errorMessage = "Incorrect Old PIN"
-                                            newPin.length < 4 -> errorMessage = "PIN must be 4-6 digits"
-                                            newPin != confirmPin -> errorMessage = "New PINs do not match"
-                                            else -> {
-                                                // 成功！把新密码回调给 SettingScreen
-                                                onSaveSuccess(newPin)
-                                            }
-                                        }
-                                    },
-                                    modifier = Modifier.padding(start = 8.dp)
-                                ) {
-                                    Text("Save")
-                                }
-                            }
+                // 数字键盘
+                PinKeypad(
+                    onNumberClick = { digit ->
+                        if (inputPin.length < 6) {
+                            inputPin += digit
+                            isError = false
+                        }
+                    },
+                    onBackspace = {
+                        if (inputPin.isNotEmpty()) {
+                            inputPin = inputPin.dropLast(1)
+                            isError = false
                         }
                     }
+                )
+
+                // 取消按钮
+                TextButton(
+                    onClick = onDismiss,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Cancel")
                 }
+            }
+        }
+    }
 }

@@ -2,7 +2,7 @@ package com.user.passwordmanager.data
 
 import kotlinx.coroutines.flow.Flow
 
-//Respository是唯一一个知道数据来源的地方,负责管数据去哪里和数据从哪里来.
+//Respository是唯一一个知道数据来源的地方,负责管数据去哪里和数据从哪里来.找数据和储存数据
 class AccountRepository (private val dao: AccountDAO, private val settingDao: SettingDAO) {
     val allAccount: Flow<List<Account>> = dao.getAllAccount()
     suspend fun insertAccount(insert: Account) = dao.insertAccount(insert)

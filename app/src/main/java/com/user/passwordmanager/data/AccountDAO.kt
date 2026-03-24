@@ -21,7 +21,4 @@ interface AccountDAO {
 
     @Update
     suspend fun updateAccount(account: Account)
-
-    @Query("SELECT * FROM Account WHERE webSiteName LIKE '%' ||:search || '%' ORDER BY webSiteName ASC")
-    suspend fun searchWebsiteName(search: String): List<Account>
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -77,8 +78,7 @@ import com.user.passwordmanager.viewmodel.AccountViewModel
         value = query,
         onValueChange = onQueryChange,
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         placeholder = {Text("WebsiteName")},
         leadingIcon ={ Icon(Icons.Default.Search, contentDescription = null)},
         shape = RoundedCornerShape(14.dp),
@@ -117,8 +117,7 @@ fun AccountItem(account: Account,onEditClick:()->Unit,onCopyClick: () -> Unit) {
             Box(
                 modifier = Modifier
                     .width(5.dp)
-                    .heightIn(min= 72.dp)
-                    .fillMaxWidth()
+                    .heightIn(min= 100.dp)
                     .background(
                         color = strengthColor,
                         shape = RoundedCornerShape(topStart = 16.dp, bottomStart = 16.dp)
@@ -211,32 +210,28 @@ fun AccountItem(account: Account,onEditClick:()->Unit,onCopyClick: () -> Unit) {
 }
 
 @Composable
-fun SwipeDeleteBackground(swipeDirection: Int,isActive: Boolean){
-    val alignment = if (swipeDirection == 0) Alignment.CenterEnd else Alignment.CenterStart
-    val iconPadding = if (swipeDirection == 0)
-        Modifier.padding(end = 24.dp)
-    else
-        Modifier.padding(start = 24.dp)
+fun SwipeDeleteBackground(swipeDirection: Int){
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 6.dp)
             .background(
-                color = if(isActive)Color(0xFFD32F2F) else Color.Transparent,
+                color = Color(0xFFD32F2F),
                 shape = RoundedCornerShape(16.dp)
             ),
-        contentAlignment = alignment
+        contentAlignment = if (swipeDirection == 0) Alignment.CenterEnd else Alignment.CenterStart
     ){
-        if (isActive){
             Icon(
                 imageVector = Icons.Default.Delete,
                 contentDescription = "Delete",
                 tint = Color.White,
-                modifier = iconPadding
+                modifier =  if (swipeDirection == 0)
+                    Modifier.padding(end = 24.dp)
+                else
+                    Modifier.padding(start = 24.dp)
             )
         }
-    }
 }
     @Composable
     fun AppNavigationBar(currentRoute: Int, onTabSelected: (Int) -> Unit) {
@@ -294,15 +289,13 @@ fun VaultScreen(accounts: List<Account>, searchText: String, viewModel: AccountV
                     dismissState.snapTo(SwipeToDismissBoxValue.Settled) // 弹回
                 }
             }
-
             SwipeToDismissBox(
                 state = dismissState,
                 enableDismissFromEndToStart = swipeDirection == 0, //left
                 enableDismissFromStartToEnd = swipeDirection == 1, //right
                 backgroundContent = {
                     SwipeDeleteBackground(
-                        swipeDirection = swipeDirection,
-                        isActive = dismissState.targetValue == triggerValue
+                        swipeDirection = swipeDirection
                     )
                 }
             ) {
@@ -327,7 +320,7 @@ fun VaultScreen(accounts: List<Account>, searchText: String, viewModel: AccountV
                         accountToDelete = null
                     },
                     title = { Text("Confirm Deletion") },
-                    text = { Text("Are you sure you want to delete '${accountToDelete?.webSiteName}','${accountToDelete?.userName}'?") },
+                    text = { Text("Are you sure you want to delete '${accountToDelete?.webSiteName} + ${accountToDelete?.userName}'?") },
                     confirmButton = {
                         TextButton(onClick = {
                             viewModel.deleteAccount(accountToDelete!!)

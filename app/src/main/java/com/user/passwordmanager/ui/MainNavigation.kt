@@ -2,12 +2,16 @@ package com.user.passwordmanager.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -19,6 +23,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.user.passwordmanager.viewmodel.AccountViewModel
 import com.user.passwordmanager.viewmodel.SettingViewModel
@@ -33,17 +39,22 @@ fun PasswordManagerScreen(viewModel: AccountViewModel,navController: NavControll
 
     Scaffold(
         topBar = {
-            if (selectedTabIndex == 0) {
-                SearchBar(
-                    query = searchText,
-                    onQueryChange = { searchText = it }
-                )
-            } else {
-                TopAppBar(title = { Text(if (selectedTabIndex == 1) "Password Generator" else "Setting") })
-            }
+            TopAppBar(
+                title = {
+                    if (selectedTabIndex == 0) {
+                        SearchBar(
+                            query = searchText,
+                            onQueryChange = { searchText = it }
+                        )
+                    } else {
+                        Text(if (selectedTabIndex == 1) "Password Generator" else "Setting")
+                    }
+                }
+            )
         },
         floatingActionButton = {
-            FloatingActionButton(onClick = { navController.navigate(Screen.AddAccount.route) }) {
+            FloatingActionButton(onClick = { navController.navigate(Screen.AddAccount.route) },
+                                    contentColor = Color(0xFF0056D2)) {
                 Icon(Icons.Default.Add, contentDescription = "Add Account")
             }
         },
