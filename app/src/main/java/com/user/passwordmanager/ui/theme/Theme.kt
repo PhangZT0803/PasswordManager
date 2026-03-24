@@ -1,21 +1,23 @@
 package com.user.passwordmanager.ui.theme
 
-import android.app.Activity
-import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Color(0xFF1A73E8),
+    primary = SecureBlue,
+    onPrimary = Color.White,
+    primaryContainer = SecureBlueContainer,
+    onPrimaryContainer = Color.White,
     background = Color(0xFF121212),
-    surface = Color(0xFF1E1E1E),
+    surface = SurfaceSubtle,
+    onSurface = OnSurfaceDark,
+    onSurfaceVariant = OnSurfaceDark,
+    surfaceVariant = SurfaceVariantDark,
+    outline = OutlineDark,
     error = Color(0xFFEA4335),
     onBackground = Color(0xFFE8EAED)
 )
@@ -28,20 +30,16 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun PasswordManagerTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
-    content: @Composable () -> Unit
+    themeIndex: Int = 0,          // 从外面传进来
+    content: @Composable () -> Unit  // 补上 content 参数
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    val darkTheme = when (themeIndex) {
+        1 -> false
+        2 -> true
+        else -> isSystemInDarkTheme()
     }
+
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme  // 赋值
 
     MaterialTheme(
         colorScheme = colorScheme,

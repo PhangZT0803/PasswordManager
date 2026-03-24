@@ -23,6 +23,7 @@ import com.user.passwordmanager.ui.theme.PasswordManagerTheme
 import com.user.passwordmanager.viewmodel.AccountViewModel
 import com.user.passwordmanager.viewmodel.AuthState
 import com.user.passwordmanager.viewmodel.AuthViewModel
+import com.user.passwordmanager.viewmodel.SettingViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -31,7 +32,9 @@ class MainActivity : FragmentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            PasswordManagerTheme {
+            val settingViewModel: SettingViewModel = hiltViewModel()
+            val setting by settingViewModel.setting.collectAsState()
+            PasswordManagerTheme(themeIndex = setting?.mainTheme ?: 0) {
                 val navController = rememberNavController()
                 val accountViewModel: AccountViewModel = hiltViewModel()
                 val authViewModel: AuthViewModel = hiltViewModel()
@@ -75,7 +78,8 @@ class MainActivity : FragmentActivity() {
                             composable(Screen.Main.route) {
                                 PasswordManagerScreen(
                                     viewModel = accountViewModel,
-                                    navController = navController
+                                    navController = navController,
+                                    settingViewModel= settingViewModel
                                 )
                             }
                             composable(Screen.AddAccount.route) {

@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+//ViewModel是数据(respository)和UI的中间层,负责UI的互动逻辑
 @HiltViewModel
 class AccountViewModel @Inject constructor(private val repository: AccountRepository): ViewModel() {
     val accounts: StateFlow<List<Account>> = repository.allAccount.map { accountList ->

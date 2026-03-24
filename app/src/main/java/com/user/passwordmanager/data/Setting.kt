@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
 data class Setting (
     @PrimaryKey val settingId: Int = 0,
     val         appPIN:  String,
-    val         SetPIN:  Boolean,
-    val      mainTheme:  Int = 0
+    val         setPIN:  Boolean,
+    val      mainTheme:  Int = 0,//0 = followSystem,1=light,2=dark
+    val swipeDirection:  Int = 0//0=left,1=right
 )

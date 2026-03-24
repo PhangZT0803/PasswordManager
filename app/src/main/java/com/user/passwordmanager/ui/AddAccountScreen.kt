@@ -40,21 +40,19 @@ import com.user.passwordmanager.Domain.PasswordStrength
 import com.user.passwordmanager.Domain.Security
 import com.user.passwordmanager.viewmodel.AccountViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)//(不是必须要的,因为TopAppBar是实验性API所以需要这个import,因为google开发团队还没有确定他的parameter)
 @Composable
 fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,accountToEdit: Account? = null){
     val initialPassword = remember(accountToEdit) {
         accountToEdit?.let { Security.passwordDecryption(it.encryptedPassword) } ?: ""
     }
-
     var webSiteName by remember{mutableStateOf(accountToEdit?.webSiteName ?: "") }
     var userName by remember{mutableStateOf(accountToEdit?.userName ?: "")}
     var password by remember{mutableStateOf( initialPassword )}
     var webSiteUrl by remember{mutableStateOf(accountToEdit?.webSiteUrl ?:"")}
-
     val isEditing = accountToEdit != null
     var isUrlAutoSyncEnabled by remember { mutableStateOf(!isEditing) }
-    val passwordStrengthScore = remember(password){ PasswordStrength.evaluateStrength(password)}
+
     Scaffold(
     topBar = {
         TopAppBar(

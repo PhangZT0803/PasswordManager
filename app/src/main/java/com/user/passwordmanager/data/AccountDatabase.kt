@@ -9,4 +9,5 @@ abstract class AccountDatabase: RoomDatabase() {
     abstract fun AccountDao(): AccountDAO
     abstract fun AccountLabelDao(): AccountLabelDAO
     abstract fun SettingDao(): SettingDAO
+    //Database定义一个数据库有什么DAO和table.
 }

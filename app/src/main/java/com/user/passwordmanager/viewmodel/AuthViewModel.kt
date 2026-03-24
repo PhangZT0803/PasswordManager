@@ -29,7 +29,7 @@ class AuthViewModel @Inject constructor(private val repository: AccountRepositor
 
     private fun checkInitialState() = viewModelScope.launch {
         val setting = repository.getSetting()
-        if (setting != null && setting.SetPIN) {
+        if (setting != null && setting.setPIN) {
             _authState.value = AuthState.RequireLogin(setting.appPIN)
         } else {
             _authState.value = AuthState.Registering
@@ -37,7 +37,7 @@ class AuthViewModel @Inject constructor(private val repository: AccountRepositor
     }
 
     fun saveAppPin(pin: String) = viewModelScope.launch {
-        val setting = Setting(appPIN = pin, SetPIN = true)
+        val setting = Setting(appPIN = pin, setPIN = true)
         repository.saveSetting(setting)
         _authState.value = AuthState.Authenticated
     }

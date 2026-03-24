@@ -5,7 +5,7 @@ sealed class Screen(val route: String) {
     object Main  : Screen("Vault")
     object AddAccount : Screen("AddAccount")
     object EditAccount : Screen("EditAccount/{accountId}"){
-        fun createRoute(accountId: Int) = "edit_account_screen/$accountId"
+        fun createRoute(accountId: Int) = "EditAccount/$accountId"
     }
 
 }

@@ -12,4 +12,5 @@ interface SettingDAO {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertSetting(setting: Setting)
+
 }

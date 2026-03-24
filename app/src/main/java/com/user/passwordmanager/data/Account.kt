@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
+//Entity 定义一个Table
 @Entity(
     tableName = "Account",
     foreignKeys = [
@@ -15,7 +16,7 @@ import androidx.room.PrimaryKey
             onDelete = ForeignKey.SET_NULL// if table "Accountlabel" deleted ,set "labelId" in table "Account" to null
         )
     ],
-    indices = [
+    indices = [ //正常的Database table的Index SQL)
         Index(value = ["webSiteUrl", "userName"], unique = true),
         Index(value = ["webSiteName"]),
         Index(value = ["labelId"])
