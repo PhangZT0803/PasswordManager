@@ -312,34 +312,33 @@ fun VaultScreen(accounts: List<Account>, searchText: String, viewModel: AccountV
                     }
                 )
             }
-
-            if (showDeleteDialog && accountToDelete != null) {
-                AlertDialog(
-                    onDismissRequest = {
-                        showDeleteDialog = false
-                        accountToDelete = null
-                    },
-                    title = { Text("Confirm Deletion") },
-                    text = { Text("Are you sure you want to delete '${accountToDelete?.webSiteName} + ${accountToDelete?.userName}'?") },
-                    confirmButton = {
-                        TextButton(onClick = {
-                            viewModel.deleteAccount(accountToDelete!!)
-                            showDeleteDialog = false
-                            accountToDelete = null
-                        }) {
-                            Text("Delete", color = MaterialTheme.colorScheme.error)
-                        }
-                    },
-                    dismissButton = {
-                        TextButton(onClick = {
-                            showDeleteDialog = false
-                            accountToDelete = null
-                        }) {
-                            Text("Cancel")
                         }
                     }
-                )
+    if (showDeleteDialog && accountToDelete != null) {
+        AlertDialog(
+            onDismissRequest = {
+                showDeleteDialog = false
+                accountToDelete = null
+            },
+            title = { Text("Confirm Deletion") },
+            text = { Text("Are you sure you want to delete '${accountToDelete?.webSiteName} + ${accountToDelete?.userName}'?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.deleteAccount(accountToDelete!!)
+                    showDeleteDialog = false
+                    accountToDelete = null
+                }) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    showDeleteDialog = false
+                    accountToDelete = null
+                }) {
+                    Text("Cancel")
+                    }
             }
-        }
+        )
     }
 }
