@@ -40,12 +40,24 @@ import com.user.passwordmanager.Domain.PasswordStrength
 import com.user.passwordmanager.Domain.Security
 import com.user.passwordmanager.viewmodel.AccountViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)//(不是必须要的,因为TopAppBar是实验性API所以需要这个import,因为google开发团队还没有确定他的parameter)
+@OptIn(ExperimentalMaterial3Api::class)//(不是必须要的,因为TopAppBar是实验性API所以需要这个import,实验性API就是google开发团队还没有确定他的parameter或者打算以后删除掉,你import这个就是类似签了我明白用这个的可能后果)
 @Composable
 fun AddAccountScreen(viewModel: AccountViewModel,navController: NavController,accountToEdit: Account? = null){
     val initialPassword = remember(accountToEdit) {
         accountToEdit?.let { Security.passwordDecryption(it.encryptedPassword) } ?: ""
     }
+    //val就是const,只可以read.(不可以被Assign新的Value)
+    //var就是可以变的,可以read和write(可以被Assign新的Value)
+    //remember是value被放进缓存
+    //mutableStateOf意思是监听value当value变就重新compose一次画面
+    //remember + mutableStateOf就是当新的画面重新渲染过一次,保住上次输入的value还在
+    //用mutableStateOf就要用by Example: val Name by remember{mutableStateOf("Phang")}
+    //不使用by的写法: val Name = remember{mutableStateOf("Phang")}
+    //用By的情况: Text(Name) ->输出就是Phang, 不用By的情况 Text(Name.value) ->输出就是Phang, mutableStateOf会把value assign给一个特殊的叫mutable类型,是Delegation委托关系
+    //总结var就用by,val就用=,用by就不需要写 .value直接使用Name.
+    //数据类型 Account? 意思是说他是一个Account type然后可能是Null,可以被AssignNull
+    // Account和Account?, Int 和Int? 是不一样的类型.带问号的都是表明这个可能是Int也可能是Null,也就是说可以被Assign Int也可以被Assign NULL.
+    // (Name ?: "") 意思是说如果左边的 Name是Null那么就默认是右边的.
     var webSiteName by remember{mutableStateOf(accountToEdit?.webSiteName ?: "") }
     var userName by remember{mutableStateOf(accountToEdit?.userName ?: "")}
     var password by remember{mutableStateOf( initialPassword )}

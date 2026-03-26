@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-//ViewModel是数据(respository)和UI的中间层,负责UI的互动逻辑
+//ViewModel是数据(respository)和UI的中间层,负责UI的互动逻辑,什么时候用Respository,什么时候用Domain
 @HiltViewModel
 class AccountViewModel @Inject constructor(private val repository: AccountRepository): ViewModel() {
     val accounts: StateFlow<List<Account>> = repository.allAccount.map { accountList ->
@@ -22,7 +22,7 @@ class AccountViewModel @Inject constructor(private val repository: AccountReposi
             account.accountId
         }
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
-
+    //StateFlow 数据有变化,就会通知UI有变化
     fun addAccount(
         webSiteName: String,
         userName: String,
@@ -64,4 +64,5 @@ class AccountViewModel @Inject constructor(private val repository: AccountReposi
         )
         repository.updateAccount(updateAccount)
     }
+
 }
