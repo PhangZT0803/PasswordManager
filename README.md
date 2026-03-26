@@ -85,11 +85,12 @@ UI 和数据层的中间层，负责决定什么时候调 Domain，什么时候�
 
 ```kotlin
 //整个流程:Room->Flow->StateFlow->State(collectAsState)
-// StateFlow — 和Flow类似
+// StateFlow(处于ViewModel层) — 和Flow类似
 // map — 对数据做转换，这里是排序
-// stateIn — 把 Flow 转成 StateFlow类型,默认当Flow里面没有Value,StateFlow被Assign 默认value:emptyList(),同时监听Flow
-//因为Flow可以没有value,但是compose第一次渲染画面必须要有一个value
-// Flow(不可以被Assign默认value(只为了compose不出error)因为都是要储存进database的->StateFlow(负责被填写默认value只为在Flow里面没有value时用于给Compose)->State(Compose)
+// stateIn — 把 Flow 转换成 StateFlow类型,同时监听Flow
+//Flow(处于respository层)就用来反应数据库的情况,但是会有一个special case就是数据库里面没有value于是Flow里面也跟着没有value
+//stateIn就会Assign默认value这里被Assign的是emptyList(),因为StateFlow也是一个DynamicList
+//当Flow有value就会覆盖掉默认value
 val accounts: StateFlow<List<Account>> = repository.allAccount
     .map { list -> list.sortedBy { it.accountId } }
     .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
