@@ -79,7 +79,7 @@ import com.user.passwordmanager.viewmodel.AccountViewModel
         onValueChange = onQueryChange,
         modifier = Modifier
             .fillMaxWidth(),
-        placeholder = {Text("WebsiteName")},
+        placeholder = {Text("Search Your Account")},
         leadingIcon ={ Icon(Icons.Default.Search, contentDescription = null)},
         shape = RoundedCornerShape(14.dp),
         singleLine = true

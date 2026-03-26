@@ -123,7 +123,7 @@ fun SettingScreen(viewModel: SettingViewModel) {
     }
     if (showPinDialog) {
         ChangePinDialog(
-            currentPin = setting?.appPIN ?: "",
+            currentPin = setting?.appPIN?:"",
             onDismiss = { showPinDialog = false },
             onSaveSuccess = { newPin ->
                 viewModel.updatePin(newPin)
@@ -135,7 +135,7 @@ fun SettingScreen(viewModel: SettingViewModel) {
 private enum class ChangePinStep { VERIFY_OLD, ENTER_NEW, CONFIRM_NEW }
 @Composable
 fun ChangePinDialog(
-    currentPin: String, // 传入当前数据库里的正确旧密码
+    currentPin: String,
     onDismiss: () -> Unit, // 点击取消或背景时的回调
     onSaveSuccess: (String) -> Unit // 保存成功后的回调，把新密码传出去
 ) {
@@ -151,7 +151,7 @@ fun ChangePinDialog(
     }
 
     val subtitle = when {
-        isError && step == ChangePinStep.VERIFY_OLD  -> "Incorrect PIN"
+        isError && step == ChangePinStep.VERIFY_OLD  -> "Incorrect PIN ,$currentPin,$isError,$step"
         isError && step == ChangePinStep.CONFIRM_NEW -> "PINs do not match"
         else -> "6-digit PIN"
     }

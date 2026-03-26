@@ -50,4 +50,8 @@ class SettingViewModel @Inject constructor(
             _setting.value = updated
         }
     }
+
+    fun reloadSettings() = viewModelScope.launch {
+        _setting.value = repository.getSetting() ?: Setting(appPIN = "", setPIN = false, mainTheme = 0, swipeDirection = 0)
+    }
 }

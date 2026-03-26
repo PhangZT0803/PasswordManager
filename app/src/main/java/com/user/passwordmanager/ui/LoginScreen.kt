@@ -45,7 +45,7 @@ fun LoginScreen(
         isError && isRegistering                  -> "PIN do not match"
         isError                                   -> "Incorrect PIN"
         isRegistering && !isConfirmStep           -> "Choose a $PIN_LENGTH-digit PIN"
-                isRegistering && isConfirmStep    -> "Re-enter your PIN"
+        isRegistering && isConfirmStep            -> "Re-enter your PIN"
         else                                      -> "Enter your 6 digits"
     }
 
